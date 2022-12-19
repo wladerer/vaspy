@@ -103,6 +103,15 @@ def slabs_from_structure(structure: Structure, miller_index: list[int], min_slab
     return slabs
 
 
+def extend_structure(structure, x_repeat: int = 1, y_repeat: int = 1 , z_repeat: int = 1) -> Structure:
+    '''
+    Extends a structure in the x, y, and z directions
+    '''
+    structure.make_supercell([x_repeat, y_repeat, z_repeat])
+
+    return structure
+
+
 def freeze_structure(structure: Structure, min_z: float) -> Structure:
     '''
     Freezes the bottom layer of a structure
