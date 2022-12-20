@@ -112,13 +112,18 @@ def extend_structure(structure, x_repeat: int = 1, y_repeat: int = 1 , z_repeat:
     return structure
 
 
-def freeze_structure(structure: Structure, min_z: float) -> Structure:
+def freeze_structure(structure: Structure, min_z: float, dof: list[bool] = [False, False, False]) -> Structure:
     '''
     Freezes the bottom layer of a structure
     '''
+    # if not isinstance(min_z, float) or not isinstance(min_z, int) or min_z <= 0:
+    #     raise TypeError("The min_z argument must be a positive, non-zero float or integer value.")
+    if not isinstance(dof, list) or not all(isinstance(x, bool) for x in dof) or len(dof) != 3:
+        raise TypeError("The dof argument must be a list of booleans with length 3.")
+
     for site in structure:
         if site.z < min_z:
-            site.properties["selective_dynamics"] = [False, False, False]
+            site.properties["selective_dynamics"] = dof
         else:
             site.properties["selective_dynamics"] = [True, True, True]
 
@@ -586,4 +591,35 @@ def create_job_array(structure_list: list[Structure]) -> pd.DataFrame:
     df = pd.concat([input.as_dataframe() for input in input_list], ignore_index=True)
 
     return df
+
+def get_symmetry_info(structure: Structure) -> str:
+    '''
+    A function that determines the symmetry label of a structure
+    '''
+    
+    space_group, intl_number = structure.get_space_group_info()
+
+    # 1-2 are triclinic, 3-15 are monoclinic, 16-74 are orthorhombic, 75-142 are tetragonal, 143-167 are trigonal, 168-194 are hexagonal, 195-230 are cubic
+    if intl_number <= 2:
+        symmetry = "triclinic"
+    elif intl_number <= 15:
+        symmetry = "monoclinic"
+    elif intl_number <= 74:
+        symmetry = "orthorhombic"
+    elif intl_number <= 142:
+        symmetry = "tetragonal"
+    elif intl_number <= 167:
+        symmetry = "trigonal"
+    elif intl_number <= 194:
+        symmetry = "hexagonal"
+    elif intl_number <= 230:
+        symmetry = "cubic"
+    else:
+        symmetry = "unknown"
+
+    return symmetry
+    
+
+
+
 

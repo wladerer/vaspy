@@ -10,8 +10,8 @@ api_key = "aOGNgkSFnNArzpnQT5ff8RIErnX1TNIz"
 def test_AutoVASP():
     # Test the AutoVASP class
     # Path: tests/test_AutoVASP.py
-    test_structure: Structure = Structure.from_file("POSCAR")
-    test_adsorbate: Molecule = Molecule.from_file("H2O.xyz")
+    test_structure: Structure = Structure.from_file("tests/POSCAR")
+    test_adsorbate: Molecule = Molecule.from_file("tests/H2O.xyz")
     test_param_dict: dict = {"SYSTEM": "test", "ISTART":0, "ENCUT": 500, "EDIFF": 1e-6, "LWAVE":".TRUE.", "LELF":".TRUE."}
     dir = "write_input_files_test/"
     
@@ -21,10 +21,10 @@ def test_AutoVASP():
     # assert isinstance(structure_from_mpi_code('1234', api_key), Structure)
 
     #test if structure_from_file returns a structure object
-    assert isinstance(structure_from_file('POSCAR'), Structure)
+    assert isinstance(structure_from_file('tests/POSCAR'), Structure)
 
     #test if molecule_from_file returns a Molecule object
-    assert isinstance(molecule_from_file('H2O.xyz'), Molecule)
+    assert isinstance(molecule_from_file('tests/H2O.xyz'), Molecule)
 
     # test if addAdsorbate returns a list of structures
     adsorbate_list = addAdsorbate(test_structure, test_adsorbate)
