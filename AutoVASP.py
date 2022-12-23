@@ -6,6 +6,8 @@ import re
 from datetime import datetime
 from typing import Union
 
+import numpy as np
+
 import pandas as pd
 from mp_api.client import MPRester
 from pymatgen.analysis.adsorption import AdsorbateSiteFinder
@@ -107,7 +109,10 @@ def extend_structure(structure, x_repeat: int = 1, y_repeat: int = 1 , z_repeat:
     '''
     Extends a structure in the x, y, and z directions
     '''
-    structure.make_supercell([x_repeat, y_repeat, z_repeat])
+
+    transformation_matrix = np.array([x_repeat, 0, 0], [0, y_repeat, 0], [0, 0, z_repeat])
+
+    structure.make_supercell(transformation_matrix)
 
     return structure
 
@@ -277,6 +282,21 @@ def incar_dict_from_json(file: str) -> dict:
         print("WARNING: A dictionary is still returned, but it may not be valid")
 
     return incar_dict
+
+def get_vacuum_size(structure: Structure) -> float:
+    '''
+    Determines the current vacuum size of a structure
+    '''
+    # get the maximum z value
+    max_z = max([site.coords[2] for site in structure.sites])
+
+    # get the minimum z value
+    min_z = min([site.coords[2] for site in structure.sites])
+
+    # get the vacuum size
+    vacuum_size = max_z - min_z
+    
+    return vacuum_size
 
 
 def update_incar_dict(incar_dict: dict, update_dict: dict) -> dict:
@@ -619,7 +639,11 @@ def get_symmetry_info(structure: Structure) -> str:
 
     return symmetry
     
-
-
-
-
+class JobMatrix:
+    '''
+    Stores multiple vaspInput objects and provides methods for comparing them
+    '''
+    
+    def __init__(self, input_list: list[vaspInput]):
+        self.input_list = input_list
+        self.df = pd.concat([input.as_dataframe() for input in input_list], ignore_index=True)
