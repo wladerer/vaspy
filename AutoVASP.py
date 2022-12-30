@@ -64,13 +64,13 @@ def molecule_from_file(filename: str) -> Molecule:
     return molecule
 
 
-def addAdsorbate(structure: Structure, adsorbate: Molecule, min_z: float = 5.0, coverage: list[int] = [1, 1, 1]) -> list[Structure]:
+def addAdsorbate(structure: Structure, adsorbate: Molecule, min_z: float = 5.0, coverage: list[int] = [1, 1, 1], distance: float = 1.0) -> list[Structure]:
     '''
     Finds all adsorption sites on a structure and adsorbs the adsorbate at each site. Returns a list of adsorbed structures.
     '''
 
     asf = AdsorbateSiteFinder(structure)
-    ads_structs = asf.generate_adsorption_structures(adsorbate, repeat=coverage, find_args={"distance": 1.6})  # edit later
+    ads_structs = asf.generate_adsorption_structures(adsorbate, repeat=coverage, find_args={"distance": distance})  # edit later
 
     for ads_struct in ads_structs:
         for site in ads_struct:
